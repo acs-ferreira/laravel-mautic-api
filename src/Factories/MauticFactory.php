@@ -1,11 +1,12 @@
-<?php namespace Princealikhan\Mautic\Factories;
+<?php
+
+namespace Princealikhan\Mautic\Factories;
 
 use Mautic\Auth\ApiAuth;
 use Mautic\Auth\OAuthClient;
 use Princealikhan\Mautic\Models\MauticConsumer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
-
 
 class MauticFactory
 {
@@ -18,11 +19,11 @@ class MauticFactory
      */
     protected function getMauticUrl($endpoints=null)
     {
-        if(!empty($endpoints))
-            return config('mautic.connections.main.baseUrl').'/'.$endpoints;
-        else
-            return config('mautic.connections.main.baseUrl').'/';
-
+        if (!empty($endpoints)) {
+            return config('mautic.connections.main.baseUrl') . '/' . $endpoints;
+        } else {
+            return config('mautic.connections.main.baseUrl') . '/';
+        }
     }
 
     /**
@@ -33,12 +34,13 @@ class MauticFactory
     public function checkExpirationTime($expireTimestamp)
     {
         $now = time();
-        if($now > $expireTimestamp)
+        if ($now > $expireTimestamp) {
             return true;
-        else
+        } else {
             return false;
-
+        }
     }
+
     /**
      * Make a new Mautic client.
      *
@@ -47,8 +49,8 @@ class MauticFactory
      */
     public function make(array $config)
     {
-
         $config = $this->getConfig($config);
+
         return $this->getClient($config);
     }
 
@@ -71,7 +73,7 @@ class MauticFactory
             }
         }
 
-        return array_only($config, ['version','baseUrl', 'clientKey', 'clientSecret','callback']);
+        return array_only($config, ['version', 'baseUrl', 'clientKey', 'clientSecret', 'callback']);
     }
 
     /**
@@ -83,13 +85,14 @@ class MauticFactory
      */
     protected function getClient(array $setting)
     {
-        session_name("mauticOAuth");
+        session_name('mauticOAuth');
         session_start();
 
         // Initiate the auth object
         $auth = ApiAuth::initiate($setting);
-        // Initiate process for obtaining an access token; this will redirect the user to the authorize endpoint and/or set the tokens when the user is redirected back after granting authorization
 
+        // Initiate process for obtaining an access token; this will redirect the user to the authorize endpoint
+        // and/or set the tokens when the user is redirected back after granting authorization
         if ($auth->validateAccessToken())
         {
             if ($auth->accessTokenUpdated()) {
@@ -115,25 +118,24 @@ class MauticFactory
      */
     public function callMautic($method, $endpoints, $body, $token)
     {
+        $mauticURL = $this->getMauticUrl('api/' . $endpoints);
 
-        $mauticURL = $this->getMauticUrl('api/'.$endpoints);
-
-        $params = array();
-        if(!empty($body)){
-            $params = array();
-            foreach ($body as $key => $item){
+        $params = [];
+        if (!empty($body)) {
+            $params = [];
+            foreach ($body as $key => $item) {
                 $params['form_params'][$key] = $item;
             }
         }
 
-        $headers = array('headers' => ['Authorization' => 'Bearer '. $token]);
+        $headers = ['headers' => ['Authorization' => 'Bearer ' . $token]);
         $client = new Client($headers);
         try {
 
-            $response = $client->request($method,$mauticURL,$params);
+            $response = $client->request($method, $mauticURL, $params);
             $responseBodyAsString = $response->getBody();
 
-            return json_decode($responseBodyAsString,true);
+            return json_decode($responseBodyAsString, true);
         }
         catch (ClientException $e) {
              $exceptionResponse = $e->getResponse();
@@ -160,7 +162,7 @@ class MauticFactory
         $client = new Client();
 
         try {
-            $response = $client->request('POST',$mauticURL,array(
+            $response = $client->request('POST', $mauticURL, [
                 'form_params' => [
                     'client_id'     => $config['clientKey'],
                     'client_secret' => $config['clientSecret'],
@@ -169,7 +171,7 @@ class MauticFactory
                     'grant_type'    => 'refresh_token'
                 ]));
             $responseBodyAsString = $response->getBody();
-            $responseBodyAsString = json_decode($responseBodyAsString,true);
+            $responseBodyAsString = json_decode($responseBodyAsString, true);
 
             return MauticConsumer::create([
                 'access_token'  => $responseBodyAsString['access_token'],
