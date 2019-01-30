@@ -1,4 +1,6 @@
-<?php namespace Princealikhan\Mautic;
+<?php
+
+namespace Princealikhan\Mautic;
 
 use Princealikhan\Mautic\Factories\MauticFactory;
 use GrahamCampbell\Manager\AbstractManager;
@@ -78,11 +80,11 @@ class Mautic extends AbstractManager
 
         $expirationStatus = $this->factory->checkExpirationTime($consumer->expires);
 
-        if($expirationStatus==true){
-            $newToken   =  $this->factory->refreshToken($consumer->refresh_token);
-            return $this->factory->callMautic($method,$endpoints,$body,$newToken->access_token);
-        } else{
-            return $this->factory->callMautic($method,$endpoints,$body,$consumer->access_token);
+        if ($expirationStatus == true) {
+            $newToken = $this->factory->refreshToken($consumer->refresh_token);
+            return $this->factory->callMautic($method, $endpoints, $body, $newToken->access_token);
+        } else {
+            return $this->factory->callMautic($method, $endpoints, $body, $consumer->access_token);
         }
     }
 
