@@ -1,13 +1,9 @@
-<?php namespace Princealikhan\Mautic\Models;
+<?php
+
+namespace Princealikhan\Mautic\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Created by PhpStorm.
- * User: prince
- * Date: 23/11/16
- * Time: 1:15 AM
- */
 class MauticConsumer extends Model
 {
     /**
@@ -22,6 +18,6 @@ class MauticConsumer extends Model
      *
      * @var array
      */
-    protected $fillable = ['access_token', 'expires', 'token_type','refresh_token'];
+    protected $fillable = ['access_token', 'expires', 'token_type', 'refresh_token'];
 
 }
