@@ -3,7 +3,8 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class MauticApiConsumerKey extends Migration {
+class MauticApiConsumerKey extends Migration
+{
 
     /**
      * Run the migrations.
@@ -15,8 +16,8 @@ class MauticApiConsumerKey extends Migration {
         Schema::create('mautic_consumer', function(Blueprint $table)
         {
             $table->increments('id');
-			$table->string('access_token');
-			$table->integer('expires');
+            $table->string('access_token');
+            $table->integer('expires');
             $table->string('token_type');
             $table->string('refresh_token');
             $table->timestamps();
